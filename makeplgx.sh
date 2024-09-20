@@ -38,6 +38,33 @@ function fatal() {
   exit 1
 }
 
+opt_output_dir="${SCRIPT_DIR}"
+
+while [ -n "$1" ] ; do
+    arg="$1"
+    case $arg in
+    --output-dir)
+      shift
+      opt_output_dir="$1"
+      log "Outputting to: ${opt_output_dir}"
+      ;;
+    --help)
+      cat << EOF 1>&2
+$0 [options]
+
+  --output-dir    Copy the PLGX file to the given directory [default:${opt_output_dir}]
+  --help          Display this help text.
+
+EOF
+      exit 0
+      ;;
+    *)
+      break
+      ;;
+    esac
+    shift
+done
+
 if ! keepass2=$(command -v keepass2); then
     fatal "Failed to find a keepass2 executable on PATH"
 fi
@@ -108,13 +135,13 @@ while read -r package_path; do
 done < <(grep HintPath "${SCRIPT_DIR}/KeeOtp2/KeeOtp2.csproj" | sed -r 's#\s+<HintPath>(.*)</HintPath>#\1#' | grep 'packages')
 
 log "Edit Resources.resx paths"
-sed -i 's#\.\.\\\.\.\\Dependencies\\#..\\Dependencies\\#g' "${SCRIPT_DIR}/KeeOtp2/Properties/Resources.resx"
+sed -i 's#\.\.\\\.\.\\Dependencies\\#..\\Dependencies\\#g' "${work_dir}/Properties/Resources.resx"
 
 log "Building PLGX file"
-if ! $keepass2  --plgx-create "${work_dir}" --plgx-prereq-net:4.7.2; then
+if ! $keepass2  --plgx-create "${work_dir}" --plgx-prereq-net:4.6.2; then
   fatal "Failed to build PLGX file"
 fi
 
-if ! cp -f -t "${SCRIPT_DIR}" "${tmp_dir}/KeeOtp2.plgx"; then
+if ! cp -f -t "${opt_output_dir}" "${tmp_dir}/KeeOtp2.plgx"; then
   fatal "Failed copying generated PLGX back to script directory"
 fi

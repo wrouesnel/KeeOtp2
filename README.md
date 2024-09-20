@@ -1,7 +1,75 @@
 ** FORKED VERSION **
 
 This is a personal fork which is managing tweaks to get this plugin working properly on Keepass2 running on Mono on
-Ubuntu 24.04.
+Ubuntu 24.04. Some libraries have been updated - see `packages.config` for details.
+
+This is sort of an unsatisfying middle ground at the moment - it works, but not nicely and the PLGX file won't install
+because Otp.Net 1.4.0 can't be loaded. But it does work with portable Keepass, which for how I use it works OK:
+
+So, current usage:
+
+* Build the project for Release (I used Jetbrains Rider for this).
+    * Specifically, I used dotnet MSBuild 16 to do the build.
+
+* Copy the output DLL's from bin/Release to the <<keepass>/Plugins/> 
+    * `KeeOtp2.dll`
+    * `NHotkey.dll`
+    * `NHotkey.WindowsForms.dll`
+    * `Otp.NET.dll`
+    * `System.Buffers.dll`
+    * `System.Memory.dll`
+    * `System.Numerics.Vectors.dll`
+    * `System.Resources.Extensions.dll`
+    * `System.Runtime.CompilerServices.Unsafe.dll`
+    * `Yort.Ntp.dll`
+    * `zxing.dll`
+    * `zxing.presentation.dll`
+
+* Also copy these DLLs to your KeePass root directory (i.e. where `KeePass.exe` is):
+    * `System.Memory.dll`
+    * `System.Resources.Extensions.dll`
+    * `System.Runtime.CompilerServices.Unsafe.dll`
+
+* Update the following into your `KeePass.exe.config` file:
+
+```xml
+			<dependentAssembly>
+				<assemblyIdentity name="System.Resources.Extensions" culture="neutral" publicKeyToken="cc7b13ffcd2ddd51" />
+				<bindingRedirect oldVersion="0.0.0.0-4.0.0.0" newVersion="8.0.0.0" />
+			</dependentAssembly>
+```
+
+So it should look like this for KeePass 2.57:
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<startup useLegacyV2RuntimeActivationPolicy="true">
+		<supportedRuntime version="v4.0" />
+		<supportedRuntime version="v2.0.50727" />
+	</startup>
+	<runtime>
+		<assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+			<dependentAssembly>
+				<assemblyIdentity name="KeePass" publicKeyToken="fed2ed7716aecf5c" culture="neutral" />
+				<bindingRedirect oldVersion="2.0.9.0-2.57.0.0" newVersion="2.57.0.21656" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="System.Resources.Extensions" culture="neutral" publicKeyToken="cc7b13ffcd2ddd51" />
+				<bindingRedirect oldVersion="0.0.0.0-4.0.0.0" newVersion="8.0.0.0" />
+			</dependentAssembly>
+		</assemblyBinding>
+		<enforceFIPSPolicy enabled="false" />
+		<loadFromRemoteSources enabled="true" />
+	</runtime>
+	<appSettings>
+		<add key="EnableWindowsFormsHighDpiAutoResizing" value="true" />
+	</appSettings>
+</configuration>
+```
+
+This will get everything working.
+
 
 # KeeOtp2
 [![Latest Release](https://img.shields.io/github/v/release/tiuub/KeeOtp2)](https://github.com/tiuub/KeeOtp2/releases/latest)
