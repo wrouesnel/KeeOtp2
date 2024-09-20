@@ -1,3 +1,8 @@
+** FORKED VERSION **
+
+This is a personal fork which is managing tweaks to get this plugin working properly on Keepass2 running on Mono on
+Ubuntu 24.04.
+
 # KeeOtp2
 [![Latest Release](https://img.shields.io/github/v/release/tiuub/KeeOtp2)](https://github.com/tiuub/KeeOtp2/releases/latest)
 [![GitHub All Releases](https://img.shields.io/github/downloads/tiuub/KeeOtp2/total)](https://github.com/tiuub/KeeOtp2/releases/latest)
